@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SnapStrip – Download ⬇️</title>
+<link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root { --pink:#FF6BB5; --purple:#A855F7; --yellow:#FFD93D; --cyan:#22D3EE; --bg:#0F0B1E; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'Nunito',sans-serif; background:var(--bg); color:#fff; min-height:100dvh; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; z-index:0; background: radial-gradient(ellipse 60% 50% at 20% 20%,rgba(168,85,247,0.25) 0%,transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%,rgba(255,107,181,0.2) 0%,transparent 60%); pointer-events:none; }
+
+  .topbar { position:relative; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:16px 20px; }
+  .logo { font-family:'Paytone One',sans-serif; font-size:20px; background:linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .retry-btn { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:8px 16px; border-radius:100px; cursor:pointer; font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; text-decoration:none; }
+
+  .container { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 20px 40px; }
+
+  /* PREVIEW */
+  .preview-wrap { display:flex; justify-content:center; margin:8px 0 24px; }
+  #preview-img { max-width:200px; max-height:340px; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08); object-fit:contain; }
+  .preview-placeholder { width:180px; height:280px; border-radius:16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:48px; }
+
+  /* SUCCESS BADGE */
+  .success-badge { text-align:center; margin-bottom:20px; }
+  .success-badge .emoji { font-size:48px; animation:pop-in 0.5s ease backwards; display:block; margin-bottom:8px; }
+  @keyframes pop-in { from { transform:scale(0.5); opacity:0; } to { transform:scale(1); opacity:1; } }
+  .success-badge h2 { font-family:'Paytone One',sans-serif; font-size:26px; margin-bottom:6px; }
+  .success-badge p { color:rgba(255,255,255,0.55); font-size:14px; }
+
+  /* DOWNLOAD OPTIONS */
+  .dl-card {
+    border-radius:20px; padding:20px; margin-bottom:12px;
+    border:1.5px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(16px);
+  }
+  .dl-card.premium { border-color:rgba(255,215,0,0.4); background:rgba(255,215,0,0.05); }
+  .dl-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .dl-title { font-size:16px; font-weight:800; }
+  .dl-badge { font-size:11px; font-weight:800; padding:3px 10px; border-radius:100px; }
+  .badge-free { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); }
+  .badge-hd { background:linear-gradient(135deg,#FFD700,#FF8C00); color:#000; }
+  .dl-features { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+  .dl-feat { font-size:13px; color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:8px; }
+  .dl-feat .check { color:var(--green,#4ADE80); }
+  .dl-feat .cross { color:rgba(255,255,255,0.25); }
+
+  .dl-btn {
+    width:100%; padding:14px; border-radius:14px; border:none; font-family:'Nunito',sans-serif;
+    font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform 0.15s, box-shadow 0.15s;
+  }
+  .dl-btn:active { transform:scale(0.97); }
+  .dl-btn.free-btn { background:rgba(255,255,255,0.1); color:#fff; border:1.5px solid rgba(255,255,255,0.2); }
+  .dl-btn.hd-btn { background:linear-gradient(135deg,#FFD700,#FF8C00); color:#000; box-shadow:0 6px 24px rgba(255,180,0,0.4); animation:hd-pulse 2.5s ease-in-out infinite; }
+  @keyframes hd-pulse { 0%,100% { box-shadow:0 6px 24px rgba(255,180,0,0.4); } 50% { box-shadow:0 6px 36px rgba(255,180,0,0.65); } }
+
+  /* SHARE ROW */
+  .share-section { margin-top:20px; }
+  .share-title { text-align:center; font-size:13px; color:rgba(255,255,255,0.45); font-weight:700; margin-bottom:12px; letter-spacing:0.5px; text-transform:uppercase; }
+  .share-row { display:flex; gap:10px; justify-content:center; }
+  .share-btn { flex:1; max-width:140px; padding:12px; border-radius:14px; border:1.5px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.06); color:#fff; font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:transform 0.15s; text-decoration:none; }
+  .share-btn:active { transform:scale(0.93); }
+  .share-btn.wa { border-color:rgba(37,211,102,0.4); background:rgba(37,211,102,0.08); }
+  .share-btn.copy { border-color:rgba(34,211,238,0.4); background:rgba(34,211,238,0.08); }
+
+  /* RETRY */
+  .retry-row { text-align:center; margin-top:24px; }
+  .retry-big { display:inline-flex; align-items:center; gap:8px; padding:12px 28px; border-radius:100px; background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.15); color:#fff; font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; cursor:pointer; text-decoration:none; transition:transform 0.15s; }
+  .retry-big:active { transform:scale(0.95); }
+
+  /* ===================== PAYMENT POPUP ===================== */
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; display:none; align-items:flex-end; justify-content:center; backdrop-filter:blur(8px); }
+  .overlay.open { display:flex; animation:overlay-in 0.3s ease; }
+  @keyframes overlay-in { from { opacity:0; } to { opacity:1; } }
+  .popup {
+    width:100%; max-width:480px; background:#1a1530; border-radius:28px 28px 0 0;
+    padding:28px 24px 40px; border-top:1px solid rgba(255,255,255,0.1);
+    animation:popup-slide 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popup-slide { from { transform:translateY(100%); } to { transform:translateY(0); } }
+  .popup-handle { width:40px; height:4px; background:rgba(255,255,255,0.2); border-radius:2px; margin:0 auto 20px; }
+  .popup-emoji { font-size:48px; text-align:center; margin-bottom:12px; display:block; }
+  .popup-title { font-family:'Paytone One',sans-serif; font-size:24px; text-align:center; margin-bottom:6px; }
+  .popup-sub { text-align:center; color:rgba(255,255,255,0.55); font-size:14px; margin-bottom:24px; line-height:1.6; }
+  .price-row { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; }
+  .price-old { font-size:18px; color:rgba(255,255,255,0.3); text-decoration:line-through; }
+  .price-new { font-family:'Paytone One',sans-serif; font-size:36px; background:linear-gradient(135deg,var(--yellow),#FF8C00); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .price-label { font-size:12px; color:rgba(255,255,255,0.4); }
+
+  .perks { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+  .perk { display:flex; align-items:center; gap:12px; font-size:14px; }
+  .perk-icon { width:36px; height:36px; border-radius:10px; background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.2); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+
+  /* PAYMENT METHODS */
+  .pay-title { font-size:12px; font-weight:800; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
+  .pay-methods { display:flex; gap:8px; margin-bottom:16px; }
+  .pay-method { flex:1; padding:10px; border-radius:12px; background:rgba(255,255,255,0.06); border:1.5px solid rgba(255,255,255,0.12); text-align:center; cursor:pointer; font-size:13px; font-weight:700; transition:all 0.15s; }
+  .pay-method.selected { border-color:var(--yellow); background:rgba(255,215,0,0.08); color:var(--yellow); }
+  .pay-method:active { transform:scale(0.95); }
+
+  .pay-btn {
+    width:100%; padding:16px; border-radius:16px; border:none; cursor:pointer;
+    background:linear-gradient(135deg,var(--yellow),#FF8C00); color:#000;
+    font-family:'Nunito',sans-serif; font-weight:900; font-size:18px;
+    box-shadow:0 8px 32px rgba(255,180,0,0.5); transition:transform 0.15s;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .pay-btn:active { transform:scale(0.97); }
+  .pay-note { text-align:center; font-size:11px; color:rgba(255,255,255,0.3); margin-top:10px; }
+  .close-popup { position:absolute; top:20px; right:24px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+
+  /* SUCCESS STATE in popup */
+  .pay-success { display:none; text-align:center; }
+  .pay-success.show { display:block; animation:pop-in 0.4s ease; }
+  .pay-success h3 { font-family:'Paytone One',sans-serif; font-size:28px; margin-bottom:8px; }
+  .pay-success p { color:rgba(255,255,255,0.55); font-size:14px; margin-bottom:24px; }
+  .dl-hd-final { width:100%; padding:16px; border-radius:16px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--pink),var(--purple)); color:#fff; font-family:'Nunito',sans-serif; font-weight:900; font-size:18px; box-shadow:0 8px 32px rgba(168,85,247,0.5); }
+
+  /* Confetti canvas */
+  #confetti { position:fixed; inset:0; pointer-events:none; z-index:200; }
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="topbar">
+  <a href="booth.html" class="retry-btn">🔄 Retake</a>
+  <div class="logo">SnapStrip</div>
+  <div style="width:80px;"></div>
+</div>
+
+<div class="container">
+  <div class="success-badge">
+    <span class="emoji">🎉</span>
+    <h2>Looking fire!</h2>
+    <p>Your photobooth strip is ready to download & share</p>
+  </div>
+
+  <div class="preview-wrap">
+    <img id="preview-img" src="" alt="Your strip" onerror="this.style.display='none'; document.querySelector('.preview-placeholder').style.display='flex';">
+    <div class="preview-placeholder" style="display:none;">📸</div>
+  </div>
+
+  <!-- FREE DOWNLOAD -->
+  <div class="dl-card">
+    <div class="dl-header">
+      <div class="dl-title">Free Download</div>
+      <div class="dl-badge badge-free">FREE</div>
+    </div>
+    <div class="dl-features">
+      <div class="dl-feat"><span class="check">✓</span> Watermarked photo</div>
+      <div class="dl-feat"><span class="check">✓</span> Standard quality</div>
+      <div class="dl-feat"><span class="cross">✗</span> <span style="opacity:0.4">HD resolution</span></div>
+      <div class="dl-feat"><span class="cross">✗</span> <span style="opacity:0.4">No watermark</span></div>
+    </div>
+    <button class="dl-btn free-btn" id="free-dl-btn">⬇️ Download Free</button>
+  </div>
+
+  <!-- HD DOWNLOAD -->
+  <div class="dl-card premium">
+    <div class="dl-header">
+      <div class="dl-title">✨ HD Download</div>
+      <div class="dl-badge badge-hd">⭐ BEST</div>
+    </div>
+    <div class="dl-features">
+      <div class="dl-feat"><span class="check">✓</span> Full HD quality</div>
+      <div class="dl-feat"><span class="check">✓</span> No watermark</div>
+      <div class="dl-feat"><span class="check">✓</span> Perfect for Instagram/Reels</div>
+      <div class="dl-feat"><span class="check">✓</span> Instant download</div>
+    </div>
+    <button class="dl-btn hd-btn" id="hd-dl-btn">⭐ Get HD – Only ₹11</button>
+  </div>
+
+  <!-- SHARE -->
+  <div class="share-section">
+    <div class="share-title">Share with friends</div>
+    <div class="share-row">
+      <a class="share-btn wa" id="wa-share" href="#" target="_blank">
+        <span>💬</span> WhatsApp
+      </a>
+      <button class="share-btn copy" id="copy-share">
+        <span>🔗</span> Copy Link
+      </button>
+      <button class="share-btn" id="native-share">
+        <span>↑</span> Share
+      </button>
+    </div>
+  </div>
+
+  <div class="retry-row">
+    <a href="booth.html" class="retry-big">📸 Take Another Strip</a>
+  </div>
+</div>
+
+<!-- PAYMENT POPUP -->
+<div class="overlay" id="pay-overlay">
+  <div class="popup" style="position:relative;">
+    <div class="popup-handle"></div>
+    <button class="close-popup" id="close-popup">✕</button>
+
+    <!-- PRE-PAYMENT STATE -->
+    <div id="pre-pay">
+      <span class="popup-emoji">⭐</span>
+      <div class="popup-title">Unlock HD Download</div>
+      <div class="popup-sub">Remove watermark & get crystal clear quality — just once, no subscription!</div>
+
+      <div class="price-row">
+        <div class="price-old">₹99</div>
+        <div class="price-new">₹11</div>
+        <div class="price-label">one-time</div>
+      </div>
+
+      <div class="perks">
+        <div class="perk"><div class="perk-icon">🖼️</div><div>Full HD resolution, perfect for print & stories</div></div>
+        <div class="perk"><div class="perk-icon">🚫</div><div>No watermark — completely clean photo</div></div>
+        <div class="perk"><div class="perk-icon">⚡</div><div>Instant download, no waiting</div></div>
+      </div>
+
+      <div class="pay-title">Pay with</div>
+      <div class="pay-methods">
+        <div class="pay-method selected" data-method="upi">📱 UPI</div>
+        <div class="pay-method" data-method="card">💳 Card</div>
+        <div class="pay-method" data-method="wallet">👛 Wallet</div>
+      </div>
+
+      <button class="pay-btn" id="pay-now-btn">
+        <span>🔒</span> Pay ₹11 Securely
+      </button>
+      <div class="pay-note">Powered by Razorpay · SSL Encrypted · Instant delivery</div>
+    </div>
+
+    <!-- POST-PAYMENT SUCCESS -->
+    <div class="pay-success" id="pay-success">
+      <div style="font-size:64px; margin-bottom:16px; animation:pop-in 0.5s ease;">🎊</div>
+      <h3>Payment Success!</h3>
+      <p>Your HD photo is ready — no watermark, full quality!</p>
+      <button class="dl-hd-final" id="dl-hd-final-btn">⬇️ Download HD Now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- LOAD PREVIEW ----
+const result = sessionStorage.getItem('snapstrip_result');
+if (result) {
+  document.getElementById('preview-img').src = result;
+  document.querySelector('.preview-placeholder').style.display = 'none';
+} else {
+  document.getElementById('preview-img').style.display = 'none';
+}
+
+// ---- FREE DOWNLOAD (with watermark already on canvas) ----
+document.getElementById('free-dl-btn').addEventListener('click', () => {
+  if (!result) { alert('No photo to download! Go take some snaps first.'); return; }
+  triggerDownload(result, 'snapstrip-free.jpg');
+  // Bounce effect
+  const btn = document.getElementById('free-dl-btn');
+  btn.textContent = '✅ Downloaded!';
+  setTimeout(() => { btn.textContent = '⬇️ Download Free'; }, 2000);
+});
+
+function triggerDownload(dataUrl, filename) {
+  const a = document.createElement('a');
+  a.href = dataUrl; a.download = filename; a.click();
+}
+
+// ---- PAYMENT FLOW ----
+let selectedMethod = 'upi';
+let paymentDone = false;
+
+document.getElementById('hd-dl-btn').addEventListener('click', () => {
+  if (paymentDone) { downloadHD(); return; }
+  document.getElementById('pay-overlay').classList.add('open');
+});
+
+document.getElementById('close-popup').addEventListener('click', () => {
+  document.getElementById('pay-overlay').classList.remove('open');
+});
+
+document.getElementById('pay-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('pay-overlay')) {
+    document.getElementById('pay-overlay').classList.remove('open');
+  }
+});
+
+document.querySelectorAll('.pay-method').forEach(m => {
+  m.addEventListener('click', () => {
+    document.querySelectorAll('.pay-method').forEach(x => x.classList.remove('selected'));
+    m.classList.add('selected');
+    selectedMethod = m.dataset.method;
+  });
+});
+
+document.getElementById('pay-now-btn').addEventListener('click', () => {
+  const btn = document.getElementById('pay-now-btn');
+  btn.innerHTML = '<span>⏳</span> Processing...';
+  btn.style.opacity = '0.7';
+  // Simulate payment processing
+  setTimeout(() => {
+    paymentDone = true;
+    document.getElementById('pre-pay').style.display = 'none';
+    document.getElementById('pay-success').classList.add('show');
+    triggerConfetti();
+    // Update HD button text
+    document.getElementById('hd-dl-btn').textContent = '⭐ Download HD (Unlocked!)';
+    document.getElementById('hd-dl-btn').style.background = 'linear-gradient(135deg,#4ADE80,#22D3EE)';
+  }, 1600);
+});
+
+document.getElementById('dl-hd-final-btn').addEventListener('click', () => {
+  downloadHD();
+  document.getElementById('pay-overlay').classList.remove('open');
+});
+
+function downloadHD() {
+  if (!result) return;
+  // HD: same canvas but we'd remove watermark in real version
+  // For MVP: just download without watermark label (simulate)
+  triggerDownload(result, 'snapstrip-HD-nowatermark.jpg');
+  document.getElementById('hd-dl-btn').textContent = '✅ HD Downloaded!';
+}
+
+// ---- SHARE ----
+const shareUrl = window.location.origin + '/';
+const shareText = '📸 Check out my photobooth strip! Made with SnapStrip ✨';
+
+document.getElementById('wa-share').href = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+
+document.getElementById('copy-share').addEventListener('click', () => {
+  navigator.clipboard.writeText(shareUrl + ' ' + shareText).then(() => {
+    const btn = document.getElementById('copy-share');
+    btn.innerHTML = '<span>✅</span> Copied!';
+    setTimeout(() => { btn.innerHTML = '<span>🔗</span> Copy Link'; }, 2000);
+  });
+});
+
+document.getElementById('native-share').addEventListener('click', async () => {
+  if (!result) return;
+  if (navigator.share) {
+    try {
+      // Convert dataUrl to blob for sharing
+      const res = await fetch(result);
+      const blob = await res.blob();
+      const file = new File([blob], 'snapstrip.jpg', { type: 'image/jpeg' });
+      await navigator.share({ title:'My SnapStrip!', text:shareText, files:[file] });
+    } catch(e) {
+      // Fallback: just share URL
+      navigator.share({ title:'SnapStrip', text:shareText, url:shareUrl }).catch(()=>{});
+    }
+  } else {
+    navigator.clipboard.writeText(shareUrl).catch(()=>{});
+    alert('Link copied! Share it anywhere 🎉');
+  }
+});
+
+// ---- CONFETTI ----
+function triggerConfetti() {
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const pieces = Array.from({length:80}, () => ({
+    x: Math.random() * canvas.width, y: -20,
+    vx: (Math.random()-0.5)*4, vy: Math.random()*4+2,
+    color: ['#FF6BB5','#A855F7','#FFD93D','#22D3EE','#4ADE80'][Math.floor(Math.random()*5)],
+    size: Math.random()*8+4, rot: Math.random()*360, vr: (Math.random()-0.5)*8,
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+      ctx.restore();
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vy += 0.1;
+    });
+    frame++;
+    if (frame < 120) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  draw();
+}
+</script>
+</body>
+</html>

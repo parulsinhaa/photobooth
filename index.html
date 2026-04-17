@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SnapStrip – Viral Photobooth ✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF6BB5;
+    --purple: #A855F7;
+    --yellow: #FFD93D;
+    --cyan: #22D3EE;
+    --green: #4ADE80;
+    --bg: #0F0B1E;
+    --card: rgba(255,255,255,0.06);
+    --glass: rgba(255,255,255,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Animated mesh background */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(168,85,247,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255,107,181,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 50% 50%, rgba(34,211,238,0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .container { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 20px; }
+
+  /* NAVBAR */
+  nav { padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Paytone One', sans-serif; font-size: 24px; background: linear-gradient(135deg, var(--pink), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .badge { background: linear-gradient(135deg, var(--yellow), #FF8C00); color: #000; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; }
+
+  /* HERO */
+  .hero { text-align: center; padding: 40px 0 20px; }
+  .hero-emoji { font-size: 64px; animation: float 3s ease-in-out infinite; display: block; margin-bottom: 16px; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .hero h1 { font-family: 'Paytone One', sans-serif; font-size: clamp(36px, 9vw, 52px); line-height: 1.1; margin-bottom: 12px; }
+  .hero h1 span { background: linear-gradient(135deg, var(--pink), var(--purple), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 16px; color: rgba(255,255,255,0.65); margin-bottom: 32px; line-height: 1.6; }
+
+  /* CTA BUTTON */
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white; font-family: 'Nunito', sans-serif; font-weight: 900;
+    font-size: 18px; padding: 18px 40px; border-radius: 100px;
+    border: none; cursor: pointer; text-decoration: none;
+    box-shadow: 0 8px 32px rgba(168,85,247,0.4), 0 2px 8px rgba(255,107,181,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    animation: pulse-btn 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-btn { 0%,100% { box-shadow: 0 8px 32px rgba(168,85,247,0.4); } 50% { box-shadow: 0 8px 48px rgba(168,85,247,0.7), 0 0 0 8px rgba(168,85,247,0.1); } }
+  .cta-btn:hover { transform: scale(1.05); }
+  .cta-btn:active { transform: scale(0.97); }
+
+  /* SAMPLE STRIP */
+  .preview-strip { margin: 40px auto; display: flex; gap: 8px; justify-content: center; }
+  .preview-strip .strip-photo {
+    width: 80px; height: 100px; border-radius: 12px;
+    background: linear-gradient(135deg, #FF6BB540, #A855F740);
+    border: 2px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    backdrop-filter: blur(8px);
+    animation: strip-pop 0.5s ease backwards;
+  }
+  .strip-photo:nth-child(1) { animation-delay: 0.1s; }
+  .strip-photo:nth-child(2) { animation-delay: 0.2s; transform: rotate(-3deg); }
+  .strip-photo:nth-child(3) { animation-delay: 0.3s; transform: rotate(2deg); }
+  .strip-photo:nth-child(4) { animation-delay: 0.4s; }
+  @keyframes strip-pop { from { opacity:0; transform: scale(0.7) translateY(20px); } to { opacity:1; } }
+
+  /* FEATURES */
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 40px; }
+  .feat {
+    background: var(--glass); backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 20px 16px; text-align: center;
+  }
+  .feat-icon { font-size: 28px; margin-bottom: 8px; }
+  .feat-title { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
+  .feat-desc { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+  /* SOCIAL PROOF */
+  .social-proof { text-align: center; margin-bottom: 40px; }
+  .avatars { display: flex; justify-content: center; margin-bottom: 8px; }
+  .av { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--bg); margin-left: -8px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FF6BB5, #A855F7); }
+  .social-proof p { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .social-proof strong { color: var(--yellow); }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 24px; font-size: 12px; color: rgba(255,255,255,0.3); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">SnapStrip</div>
+  <div class="badge">✨ FREE</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <span class="hero-emoji">📸</span>
+    <h1>Your Photos,<br><span>Instantly Iconic</span></h1>
+    <p>Snap → Filter → Download → Go viral.<br>No app. No login. Just vibes.</p>
+    <a href="booth.html" class="cta-btn">
+      <span>📷</span> Start Photobooth
+    </a>
+  </div>
+
+  <div class="preview-strip">
+    <div class="strip-photo">🌸</div>
+    <div class="strip-photo">🔥</div>
+    <div class="strip-photo">✨</div>
+    <div class="strip-photo">💫</div>
+  </div>
+
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-title">12 Filters</div>
+      <div class="feat-desc">Kawaii, Retro, Neon & more</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🎞️</div>
+      <div class="feat-title">Strip + Grid</div>
+      <div class="feat-desc">Real photobooth layouts</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">💌</div>
+      <div class="feat-title">Stickers</div>
+      <div class="feat-desc">Cute emoji overlays</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">10 Seconds</div>
+      <div class="feat-desc">Snap to download, fast</div>
+    </div>
+  </div>
+
+  <div class="social-proof">
+    <div class="avatars">
+      <div class="av">😊</div><div class="av">🥰</div><div class="av">😎</div><div class="av">🤩</div><div class="av">😍</div>
+    </div>
+    <p><strong>12,847 photos</strong> taken today · Trending on Instagram 🔥</p>
+  </div>
+</div>
+
+<footer>Made with 💜 · SnapStrip © 2025</footer>
+</body>
+</html>
