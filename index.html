@@ -2,162 +2,1257 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>SnapStrip – Viral Photobooth ✨</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Photobooth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=DM+Sans:wght@300;400;500;600&family=Sacramento&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --pink: #FF6BB5;
-    --purple: #A855F7;
-    --yellow: #FFD93D;
-    --cyan: #22D3EE;
-    --green: #4ADE80;
-    --bg: #0F0B1E;
-    --card: rgba(255,255,255,0.06);
-    --glass: rgba(255,255,255,0.08);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg);
-    color: #fff;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  /* Animated mesh background */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(168,85,247,0.25) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255,107,181,0.2) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 30% at 50% 50%, rgba(34,211,238,0.1) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .container { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 20px; }
+/* ─── TOKENS ──────────────────────────────────────────────── */
+:root {
+  --cream:   #FDF8F3;
+  --blush:   #F2C4CE;
+  --rose:    #E8A0B0;
+  --mauve:   #C9A0C8;
+  --lilac:   #D4B8E0;
+  --sage:    #B8D4C8;
+  --peach:   #F5C6A0;
+  --sky:     #B8D8E8;
+  --soft-text: #6B5B6E;
+  --dark:    #3D2E40;
+  --white:   #FFFFFF;
+  --radius:  20px;
+  --shadow:  0 8px 40px rgba(61,46,64,.10);
+  --shadow-lg: 0 20px 60px rgba(61,46,64,.16);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--dark);
+  display:flex;flex-direction:column;
+}
 
-  /* NAVBAR */
-  nav { padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { font-family: 'Paytone One', sans-serif; font-size: 24px; background: linear-gradient(135deg, var(--pink), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .badge { background: linear-gradient(135deg, var(--yellow), #FF8C00); color: #000; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.5px; }
+/* ─── GRAIN OVERLAY ────────────────────────────────────────── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
 
-  /* HERO */
-  .hero { text-align: center; padding: 40px 0 20px; }
-  .hero-emoji { font-size: 64px; animation: float 3s ease-in-out infinite; display: block; margin-bottom: 16px; }
-  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-  .hero h1 { font-family: 'Paytone One', sans-serif; font-size: clamp(36px, 9vw, 52px); line-height: 1.1; margin-bottom: 12px; }
-  .hero h1 span { background: linear-gradient(135deg, var(--pink), var(--purple), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero p { font-size: 16px; color: rgba(255,255,255,0.65); margin-bottom: 32px; line-height: 1.6; }
+/* ─── PAGES ─────────────────────────────────────────────────── */
+.page{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;
+  transform:translateY(16px);overflow:hidden;
+}
+.page.active{opacity:1;pointer-events:all;transform:translateY(0)}
 
-  /* CTA BUTTON */
-  .cta-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    color: white; font-family: 'Nunito', sans-serif; font-weight: 900;
-    font-size: 18px; padding: 18px 40px; border-radius: 100px;
-    border: none; cursor: pointer; text-decoration: none;
-    box-shadow: 0 8px 32px rgba(168,85,247,0.4), 0 2px 8px rgba(255,107,181,0.3);
-    transition: transform 0.15s, box-shadow 0.15s;
-    animation: pulse-btn 2.5s ease-in-out infinite;
-  }
-  @keyframes pulse-btn { 0%,100% { box-shadow: 0 8px 32px rgba(168,85,247,0.4); } 50% { box-shadow: 0 8px 48px rgba(168,85,247,0.7), 0 0 0 8px rgba(168,85,247,0.1); } }
-  .cta-btn:hover { transform: scale(1.05); }
-  .cta-btn:active { transform: scale(0.97); }
+/* ══════════════════════════════════════════════════════════════
+   PAGE 0 — LANDING
+══════════════════════════════════════════════════════════════ */
+#page-landing{
+  background: linear-gradient(160deg,#FDF0F5 0%,#F5EEF8 40%,#EEF5FB 100%);
+  align-items:center;justify-content:center;text-align:center;padding:32px 24px;
+}
+.land-logo{
+  font-family:'Sacramento',cursive;font-size:52px;
+  background:linear-gradient(135deg,var(--rose),var(--mauve));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:6px;line-height:1;
+}
+.land-tagline{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--rose);font-weight:500;margin-bottom:48px}
+.film-row{display:flex;gap:10px;justify-content:center;margin-bottom:48px}
+.film-frame{
+  width:72px;height:88px;border-radius:12px;
+  border:2px solid rgba(200,160,200,.25);
+  background:rgba(255,255,255,.5);
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  box-shadow:0 4px 20px rgba(200,160,200,.2);
+  animation:float-card 3s ease-in-out infinite;
+}
+.film-frame:nth-child(2){animation-delay:.4s;transform:rotate(-2deg)}
+.film-frame:nth-child(3){animation-delay:.8s;transform:rotate(2deg)}
+.film-frame:nth-child(4){animation-delay:1.2s}
+@keyframes float-card{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.land-h1{font-family:'Playfair Display',serif;font-size:clamp(28px,7vw,42px);line-height:1.2;margin-bottom:12px;color:var(--dark)}
+.land-h1 em{font-style:italic;color:var(--mauve)}
+.land-sub{font-size:15px;color:var(--soft-text);line-height:1.7;margin-bottom:40px;max-width:300px}
+.btn-main{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,var(--rose) 0%,var(--mauve) 100%);
+  color:#fff;border:none;
+  font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 36px;border-radius:100px;cursor:pointer;
+  box-shadow:0 8px 28px rgba(200,128,176,.4);
+  transition:transform .2s,box-shadow .2s;letter-spacing:.3px;
+}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(200,128,176,.5)}
+.btn-main:active{transform:scale(.96)}
+.land-steps{
+  display:flex;gap:20px;margin-top:36px;
+  font-size:12px;color:var(--soft-text);letter-spacing:.5px;
+}
+.land-step{display:flex;align-items:center;gap:6px}
+.step-dot{width:6px;height:6px;border-radius:50%;background:var(--blush)}
 
-  /* SAMPLE STRIP */
-  .preview-strip { margin: 40px auto; display: flex; gap: 8px; justify-content: center; }
-  .preview-strip .strip-photo {
-    width: 80px; height: 100px; border-radius: 12px;
-    background: linear-gradient(135deg, #FF6BB540, #A855F740);
-    border: 2px solid rgba(255,255,255,0.15);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px;
-    backdrop-filter: blur(8px);
-    animation: strip-pop 0.5s ease backwards;
-  }
-  .strip-photo:nth-child(1) { animation-delay: 0.1s; }
-  .strip-photo:nth-child(2) { animation-delay: 0.2s; transform: rotate(-3deg); }
-  .strip-photo:nth-child(3) { animation-delay: 0.3s; transform: rotate(2deg); }
-  .strip-photo:nth-child(4) { animation-delay: 0.4s; }
-  @keyframes strip-pop { from { opacity:0; transform: scale(0.7) translateY(20px); } to { opacity:1; } }
+/* ══════════════════════════════════════════════════════════════
+   PAGE 1 — LAYOUT PICKER
+══════════════════════════════════════════════════════════════ */
+#page-layout{
+  background:linear-gradient(160deg,#FDF0F5 0%,#F5EEF8 60%,#EEF5FB 100%);
+  overflow-y:auto;
+}
+.page-header{
+  padding:20px 24px 0;display:flex;align-items:center;gap:16px;
+  position:sticky;top:0;z-index:10;
+  background:inherit;backdrop-filter:blur(20px);padding-bottom:16px;
+  border-bottom:1px solid rgba(200,160,200,.15);
+}
+.back-btn{
+  width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(200,160,200,.4);
+  background:rgba(255,255,255,.6);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  color:var(--soft-text);font-size:16px;transition:all .15s;flex-shrink:0;
+}
+.back-btn:active{transform:scale(.9)}
+.page-title-wrap{flex:1}
+.page-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--dark)}
+.page-sub{font-size:12px;color:var(--soft-text);margin-top:1px}
 
-  /* FEATURES */
-  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 40px; }
-  .feat {
-    background: var(--glass); backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px; padding: 20px 16px; text-align: center;
-  }
-  .feat-icon { font-size: 28px; margin-bottom: 8px; }
-  .feat-title { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
-  .feat-desc { font-size: 12px; color: rgba(255,255,255,0.5); }
+.layout-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:20px 24px 32px}
+.layout-card{
+  background:#fff;border-radius:20px;padding:20px 16px 18px;
+  border:2px solid transparent;cursor:pointer;
+  box-shadow:0 4px 20px rgba(200,160,200,.1);
+  transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:12px;
+  position:relative;overflow:hidden;
+}
+.layout-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(242,196,206,.15),rgba(212,184,224,.1));
+  opacity:0;transition:opacity .2s;
+}
+.layout-card:hover{border-color:rgba(200,160,200,.4);transform:translateY(-2px);box-shadow:0 8px 32px rgba(200,160,200,.2)}
+.layout-card:hover::before{opacity:1}
+.layout-card.selected{border-color:var(--rose);box-shadow:0 8px 32px rgba(200,128,176,.25)}
+.layout-card.selected::before{opacity:1}
+.layout-card.selected .layout-check{opacity:1;transform:scale(1)}
 
-  /* SOCIAL PROOF */
-  .social-proof { text-align: center; margin-bottom: 40px; }
-  .avatars { display: flex; justify-content: center; margin-bottom: 8px; }
-  .av { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--bg); margin-left: -8px; font-size: 20px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #FF6BB5, #A855F7); }
-  .social-proof p { font-size: 13px; color: rgba(255,255,255,0.5); }
-  .social-proof strong { color: var(--yellow); }
+.layout-check{
+  position:absolute;top:10px;right:10px;
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose),var(--mauve));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:#fff;
+  opacity:0;transform:scale(.5);transition:all .2s;
+}
 
-  /* FOOTER */
-  footer { text-align: center; padding: 24px; font-size: 12px; color: rgba(255,255,255,0.3); }
+.strip-preview{display:flex;flex-direction:column;gap:3px;align-items:center}
+.strip-preview.grid{flex-direction:row;flex-wrap:wrap;width:fit-content;gap:3px}
+.sp-frame{
+  border-radius:4px;
+  background:linear-gradient(135deg,rgba(242,196,206,.5),rgba(212,184,224,.4));
+  border:1px solid rgba(200,160,200,.2);
+}
+.layout-name{font-size:13px;font-weight:600;color:var(--dark)}
+.layout-desc{font-size:11px;color:var(--soft-text);text-align:center;line-height:1.4}
+
+.layout-cta{padding:0 24px 32px}
+.btn-secondary{
+  width:100%;padding:15px;border-radius:100px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--rose),var(--mauve));
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;
+  box-shadow:0 8px 28px rgba(200,128,176,.35);transition:all .2s;letter-spacing:.3px;
+}
+.btn-secondary:active{transform:scale(.97)}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE 2 — CAMERA BOOTH
+══════════════════════════════════════════════════════════════ */
+#page-booth{background:#1C1A24}
+.booth-top{
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;
+  background:rgba(28,26,36,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.booth-logo{font-family:'Sacramento',cursive;font-size:28px;color:#F2C4CE}
+.booth-top-right{display:flex;gap:8px;align-items:center}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;color:rgba(255,255,255,.7);
+  transition:all .15s;
+}
+.icon-btn:active{transform:scale(.88);background:rgba(255,255,255,.12)}
+
+/* PROGRESS DOTS */
+.progress-bar{
+  padding:12px 20px 10px;
+  background:rgba(28,26,36,.95);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.prog-dot{
+  width:28px;height:8px;border-radius:4px;
+  background:rgba(255,255,255,.1);transition:all .3s;
+}
+.prog-dot.done{background:var(--rose)}
+.prog-dot.active{background:var(--blush);width:44px}
+
+/* CAMERA */
+.camera-container{flex:1;position:relative;overflow:hidden}
+#video{width:100%;height:100%;object-fit:cover;display:block}
+#video.mirror{transform:scaleX(-1)}
+
+/* FILTER ON VIDEO */
+#video.f-bw{filter:grayscale(1)}
+#video.f-warm{filter:sepia(.4) saturate(1.6) brightness(1.05)}
+#video.f-cool{filter:saturate(.7) hue-rotate(20deg) brightness(1.1)}
+#video.f-dreamy{filter:brightness(1.12) saturate(1.3) contrast(.92)}
+#video.f-retro{filter:sepia(.6) contrast(1.1) brightness(.95)}
+#video.f-fade{filter:contrast(.82) brightness(1.1) saturate(.65)}
+#video.f-neon{filter:saturate(2.2) contrast(1.25) brightness(.9) hue-rotate(15deg)}
+#video.f-rosy{filter:sepia(.2) saturate(1.4) hue-rotate(-20deg) brightness(1.08)}
+
+/* COUNTDOWN OVERLAY */
+#countdown-overlay{
+  position:absolute;inset:0;z-index:20;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(28,26,36,.2);backdrop-filter:blur(2px);
+}
+.count-num{
+  font-family:'Playfair Display',serif;font-size:140px;color:#fff;
+  text-shadow:0 0 60px rgba(242,196,206,.8);
+  animation:count-anim .85s ease both;
+}
+@keyframes count-anim{
+  0%{transform:scale(1.5);opacity:0}
+  30%{transform:scale(1);opacity:1}
+  80%{transform:scale(.95);opacity:1}
+  100%{transform:scale(.8);opacity:0}
+}
+
+/* FLASH */
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:30;transition:opacity .08s}
+
+/* No-camera */
+.no-cam-overlay{
+  position:absolute;inset:0;background:#1C1A24;z-index:5;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:32px;
+}
+.no-cam-overlay h3{color:#fff;font-family:'Playfair Display',serif;font-size:22px}
+.no-cam-overlay p{color:rgba(255,255,255,.5);font-size:14px;line-height:1.6}
+
+/* FILTER STRIP */
+.filter-rail{
+  background:rgba(28,26,36,.98);border-top:1px solid rgba(255,255,255,.06);
+  padding:10px 0 12px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;
+}
+.filter-rail::-webkit-scrollbar{display:none}
+.filter-pill{
+  flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:0 14px;cursor:pointer;
+}
+.filter-circle{
+  width:46px;height:46px;border-radius:50%;border:2.5px solid transparent;
+  background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;letter-spacing:.3px;color:rgba(255,255,255,.5);
+  transition:all .2s;overflow:hidden;
+}
+.filter-circle canvas{width:100%;height:100%;border-radius:50%}
+.filter-pill.active .filter-circle{border-color:var(--rose);transform:scale(1.1)}
+.filter-label{font-size:10px;color:rgba(255,255,255,.45);font-weight:500;white-space:nowrap}
+.filter-pill.active .filter-label{color:var(--rose)}
+
+/* BOTTOM CONTROLS */
+.booth-controls{
+  background:rgba(28,26,36,.98);border-top:1px solid rgba(255,255,255,.05);
+  padding:16px 24px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ctrl-side{display:flex;flex-direction:column;align-items:center;gap:4px}
+.ctrl-label{font-size:10px;color:rgba(255,255,255,.35);font-weight:500}
+
+.shutter{
+  width:78px;height:78px;border-radius:50%;
+  background:linear-gradient(145deg,var(--blush),var(--rose));
+  border:none;cursor:pointer;
+  box-shadow:0 0 0 6px rgba(242,196,206,.15),0 8px 28px rgba(200,128,176,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;transition:all .15s;
+  animation:shutter-pulse 3s ease-in-out infinite;
+}
+.shutter:active{transform:scale(.88);box-shadow:0 0 0 3px rgba(242,196,206,.1)}
+@keyframes shutter-pulse{
+  0%,100%{box-shadow:0 0 0 6px rgba(242,196,206,.15),0 8px 28px rgba(200,128,176,.4)}
+  50%{box-shadow:0 0 0 12px rgba(242,196,206,.08),0 8px 36px rgba(200,128,176,.55)}
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE 3 — EDITOR / RESULT
+══════════════════════════════════════════════════════════════ */
+#page-editor{
+  background:linear-gradient(160deg,#FDF0F5 0%,#F5EEF8 50%,#EEF5FB 100%);
+  overflow-y:auto;
+}
+.editor-canvas-wrap{
+  display:flex;justify-content:center;align-items:center;
+  padding:20px 24px 12px;
+}
+#result-canvas{
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(200,160,200,.35),0 0 0 1px rgba(200,160,200,.2);
+  max-width:100%;max-height:360px;object-fit:contain;
+}
+
+/* BG STRIP */
+.editor-section{padding:0 24px 16px}
+.ed-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--soft-text);margin-bottom:10px}
+.bg-strip{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.bg-strip::-webkit-scrollbar{display:none}
+.bg-swatch{
+  flex-shrink:0;width:38px;height:38px;border-radius:12px;cursor:pointer;
+  border:2.5px solid transparent;transition:all .2s;
+}
+.bg-swatch.active{border-color:var(--rose);transform:scale(1.15)}
+
+/* STICKER STRIP */
+.sticker-strip{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.sticker-strip::-webkit-scrollbar{display:none}
+.stk{
+  flex-shrink:0;width:44px;height:44px;border-radius:12px;
+  background:rgba(255,255,255,.7);border:1.5px solid rgba(200,160,200,.2);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  cursor:pointer;transition:transform .15s;backdrop-filter:blur(8px);
+}
+.stk:active{transform:scale(.85)}
+
+/* ADJUSTMENT SLIDERS */
+.sliders{display:flex;flex-direction:column;gap:12px}
+.slider-row{display:flex;align-items:center;gap:12px}
+.sl-label{font-size:12px;color:var(--soft-text);font-weight:500;width:76px}
+input[type=range]{
+  flex:1;-webkit-appearance:none;height:5px;border-radius:3px;
+  background:linear-gradient(90deg,var(--rose) var(--p,50%),rgba(200,160,200,.2) var(--p,50%));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose),var(--mauve));
+  box-shadow:0 2px 8px rgba(200,128,176,.4);cursor:pointer;
+}
+.sl-val{font-size:11px;color:var(--soft-text);width:28px;text-align:right}
+
+/* EDITOR TABS */
+.ed-tabs{display:flex;gap:6px;padding:0 24px 16px;overflow-x:auto;scrollbar-width:none}
+.ed-tab{
+  flex-shrink:0;padding:7px 16px;border-radius:100px;
+  border:1.5px solid rgba(200,160,200,.3);background:rgba(255,255,255,.5);
+  font-size:12px;font-weight:600;color:var(--soft-text);cursor:pointer;transition:all .2s;
+  backdrop-filter:blur(8px);
+}
+.ed-tab.active{background:linear-gradient(135deg,var(--rose),var(--mauve));border-color:transparent;color:#fff}
+
+.ed-panel{display:none}
+.ed-panel.active{display:block}
+
+/* DOWNLOAD SECTION */
+.dl-section{padding:16px 24px 0}
+.dl-free{
+  width:100%;padding:14px;border-radius:14px;
+  background:rgba(255,255,255,.7);border:1.5px solid rgba(200,160,200,.3);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  color:var(--soft-text);cursor:pointer;margin-bottom:10px;
+  backdrop-filter:blur(8px);transition:all .2s;
+}
+.dl-free:active{transform:scale(.97)}
+.dl-hd{
+  width:100%;padding:14px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,var(--rose),var(--mauve));
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;
+  color:#fff;cursor:pointer;
+  box-shadow:0 8px 28px rgba(200,128,176,.35);
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.dl-hd:active{transform:scale(.97)}
+
+.retry-row{padding:12px 24px 24px;display:flex;gap:10px}
+.retry-btn2{
+  flex:1;padding:12px;border-radius:12px;border:1.5px solid rgba(200,160,200,.3);
+  background:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;font-size:13px;
+  font-weight:600;color:var(--soft-text);cursor:pointer;backdrop-filter:blur(8px);
+}
+.share-wa{
+  flex:1;padding:12px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+  color:#fff;cursor:pointer;
+}
+
+/* ─── PAYWALL MODAL ─────────────────────────────────────────── */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(61,46,64,.5);z-index:500;
+  display:none;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(12px);
+}
+.modal-bg.open{display:flex;animation:bg-in .3s ease}
+@keyframes bg-in{from{opacity:0}to{opacity:1}}
+.modal{
+  width:100%;max-width:480px;background:#fff;
+  border-radius:28px 28px 0 0;padding:8px 28px 48px;
+  animation:modal-up .35s cubic-bezier(.34,1.56,.64,1);
+  max-height:90dvh;overflow-y:auto;
+}
+@keyframes modal-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:rgba(200,160,200,.3);border-radius:2px;margin:12px auto 24px}
+.modal-emoji{font-size:52px;text-align:center;display:block;margin-bottom:12px}
+.modal-title{font-family:'Playfair Display',serif;font-size:26px;text-align:center;color:var(--dark);margin-bottom:8px}
+.modal-sub{font-size:14px;color:var(--soft-text);text-align:center;line-height:1.65;margin-bottom:24px}
+.price-strip{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  background:linear-gradient(135deg,rgba(242,196,206,.2),rgba(212,184,224,.15));
+  border:1.5px solid rgba(200,160,200,.2);border-radius:16px;
+  padding:16px;margin-bottom:20px;
+}
+.pr-old{font-size:16px;color:rgba(107,91,110,.4);text-decoration:line-through}
+.pr-new{font-family:'Playfair Display',serif;font-size:38px;color:var(--dark)}
+.pr-label{font-size:12px;color:var(--soft-text)}
+.perks-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.perk-row{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--soft-text)}
+.perk-ico{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(242,196,206,.4),rgba(212,184,224,.3));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pay-methods{display:flex;gap:8px;margin-bottom:18px}
+.pay-m{
+  flex:1;padding:10px 8px;border-radius:12px;border:1.5px solid rgba(200,160,200,.25);
+  background:rgba(242,196,206,.05);text-align:center;cursor:pointer;
+  font-size:12px;font-weight:600;color:var(--soft-text);transition:all .15s;
+}
+.pay-m.sel{border-color:var(--rose);background:rgba(242,196,206,.15);color:var(--rose)}
+.pay-now{
+  width:100%;padding:16px;border-radius:100px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--rose),var(--mauve));
+  font-family:'DM Sans',sans-serif;font-size:17px;font-weight:700;color:#fff;
+  box-shadow:0 10px 32px rgba(200,128,176,.4);transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.pay-now:active{transform:scale(.97)}
+.pay-secure{text-align:center;font-size:11px;color:rgba(107,91,110,.5);margin-top:10px}
+.pay-close{
+  position:absolute;top:16px;right:20px;background:rgba(200,160,200,.15);
+  border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;
+  font-size:14px;color:var(--soft-text);
+}
+
+/* SUCCESS STATE */
+.pay-success{display:none;text-align:center;padding:8px 0}
+.pay-success.show{display:block;animation:pop-in .4s ease}
+@keyframes pop-in{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.pay-success h3{font-family:'Playfair Display',serif;font-size:28px;color:var(--dark);margin:16px 0 8px}
+.pay-success p{color:var(--soft-text);font-size:14px;margin-bottom:24px}
+.dl-final{
+  width:100%;padding:16px;border-radius:100px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--rose),var(--mauve));
+  font-family:'DM Sans',sans-serif;font-size:17px;font-weight:700;color:#fff;
+  box-shadow:0 10px 32px rgba(200,128,176,.4);
+}
+
+/* CONFETTI */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:9998}
+
+/* ─── UTILS ─────────────────────────────────────────────────── */
+.hidden{display:none!important}
+canvas.hidden{display:none!important}
 </style>
 </head>
 <body>
-<nav>
-  <div class="logo">SnapStrip</div>
-  <div class="badge">✨ FREE</div>
-</nav>
 
-<div class="container">
-  <div class="hero">
-    <span class="hero-emoji">📸</span>
-    <h1>Your Photos,<br><span>Instantly Iconic</span></h1>
-    <p>Snap → Filter → Download → Go viral.<br>No app. No login. Just vibes.</p>
-    <a href="booth.html" class="cta-btn">
-      <span>📷</span> Start Photobooth
-    </a>
+<!-- ■■■ PAGE 0: LANDING ■■■ -->
+<div id="page-landing" class="page active">
+  <div class="land-logo">Photobooth</div>
+  <div class="land-tagline">snap · filter · remember</div>
+
+  <div class="film-row">
+    <div class="film-frame">🌸</div>
+    <div class="film-frame">✨</div>
+    <div class="film-frame">💜</div>
+    <div class="film-frame">🎞️</div>
   </div>
 
-  <div class="preview-strip">
-    <div class="strip-photo">🌸</div>
-    <div class="strip-photo">🔥</div>
-    <div class="strip-photo">✨</div>
-    <div class="strip-photo">💫</div>
-  </div>
+  <h1 class="land-h1">Make every snap<br><em>unforgettable</em></h1>
+  <p class="land-sub">Korean-style photo strips, gorgeous filters, and instant downloads — right in your browser.</p>
 
-  <div class="features">
-    <div class="feat">
-      <div class="feat-icon">🎨</div>
-      <div class="feat-title">12 Filters</div>
-      <div class="feat-desc">Kawaii, Retro, Neon & more</div>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">🎞️</div>
-      <div class="feat-title">Strip + Grid</div>
-      <div class="feat-desc">Real photobooth layouts</div>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">💌</div>
-      <div class="feat-title">Stickers</div>
-      <div class="feat-desc">Cute emoji overlays</div>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">⚡</div>
-      <div class="feat-title">10 Seconds</div>
-      <div class="feat-desc">Snap to download, fast</div>
-    </div>
-  </div>
+  <button class="btn-main" onclick="goTo('page-layout')">
+    📷 &nbsp;Open Photobooth
+  </button>
 
-  <div class="social-proof">
-    <div class="avatars">
-      <div class="av">😊</div><div class="av">🥰</div><div class="av">😎</div><div class="av">🤩</div><div class="av">😍</div>
-    </div>
-    <p><strong>12,847 photos</strong> taken today · Trending on Instagram 🔥</p>
+  <div class="land-steps">
+    <div class="land-step"><div class="step-dot"></div> Pick Layout</div>
+    <div class="land-step"><div class="step-dot"></div> Snap Photos</div>
+    <div class="land-step"><div class="step-dot"></div> Download</div>
   </div>
 </div>
 
-<footer>Made with 💜 · SnapStrip © 2025</footer>
+<!-- ■■■ PAGE 1: LAYOUT PICKER ■■■ -->
+<div id="page-layout" class="page">
+  <div class="page-header">
+    <button class="back-btn" onclick="goTo('page-landing')">←</button>
+    <div class="page-title-wrap">
+      <div class="page-title">Choose Layout</div>
+      <div class="page-sub">How many photos in your strip?</div>
+    </div>
+  </div>
+
+  <div class="layout-grid" id="layout-grid">
+    <!-- cards injected by JS -->
+  </div>
+
+  <div class="layout-cta">
+    <button class="btn-secondary" id="layout-next-btn" onclick="startBooth()">
+      Start Shooting ✨
+    </button>
+  </div>
+</div>
+
+<!-- ■■■ PAGE 2: BOOTH ■■■ -->
+<div id="page-booth" class="page">
+  <div class="booth-top">
+    <button class="back-btn" style="border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7)" onclick="exitBooth()">←</button>
+    <div class="booth-logo">Photobooth</div>
+    <div class="booth-top-right">
+      <div class="icon-btn" id="flip-btn" title="Flip">🔄</div>
+      <div class="icon-btn" id="upload-btn" title="Upload">📁</div>
+    </div>
+  </div>
+
+  <div class="progress-bar" id="progress-bar">
+    <!-- dots injected by JS -->
+  </div>
+
+  <div class="camera-container">
+    <video id="video" autoplay playsinline muted class="mirror"></video>
+    <div id="countdown-overlay">
+      <div class="count-num" id="count-num">3</div>
+    </div>
+    <div id="flash"></div>
+    <div class="no-cam-overlay" id="no-cam">
+      <div style="font-size:56px">📷</div>
+      <h3>Camera unavailable</h3>
+      <p>Upload photos from your gallery instead</p>
+      <button class="btn-main" style="margin-top:8px" onclick="document.getElementById('file-input').click()">Upload Photos</button>
+    </div>
+  </div>
+
+  <div class="filter-rail" id="filter-rail">
+    <!-- injected -->
+  </div>
+
+  <div class="booth-controls">
+    <div class="ctrl-side">
+      <div class="icon-btn" id="random-btn">🎲</div>
+      <div class="ctrl-label">Random</div>
+    </div>
+    <button class="shutter" id="shutter-btn">📸</button>
+    <div class="ctrl-side">
+      <div class="icon-btn" id="retake-btn">↩</div>
+      <div class="ctrl-label">Undo</div>
+    </div>
+  </div>
+</div>
+
+<!-- ■■■ PAGE 3: EDITOR + DOWNLOAD ■■■ -->
+<div id="page-editor" class="page">
+  <div class="page-header">
+    <button class="back-btn" onclick="goTo('page-booth')">←</button>
+    <div class="page-title-wrap">
+      <div class="page-title">Your Strip</div>
+      <div class="page-sub">Customize & download</div>
+    </div>
+  </div>
+
+  <div class="editor-canvas-wrap">
+    <canvas id="result-canvas"></canvas>
+  </div>
+
+  <div class="ed-tabs">
+    <div class="ed-tab active" data-panel="bg">🎨 Background</div>
+    <div class="ed-tab" data-panel="stickers">🌸 Stickers</div>
+    <div class="ed-tab" data-panel="adjust">✦ Adjust</div>
+  </div>
+
+  <div id="ep-bg" class="ed-panel active editor-section">
+    <div class="ed-label">Strip Background</div>
+    <div class="bg-strip" id="bg-strip"></div>
+  </div>
+
+  <div id="ep-stickers" class="ed-panel editor-section">
+    <div class="ed-label">Tap to add sticker</div>
+    <div class="sticker-strip" id="sticker-strip"></div>
+  </div>
+
+  <div id="ep-adjust" class="ed-panel editor-section">
+    <div class="sliders" id="sliders"></div>
+  </div>
+
+  <div class="dl-section">
+    <button class="dl-free" id="dl-free-btn">⬇ Download (with watermark)</button>
+    <button class="dl-hd" id="dl-hd-btn">⭐ HD Download — Only ₹11</button>
+  </div>
+  <div class="retry-row">
+    <button class="retry-btn2" onclick="resetAll()">📸 New Strip</button>
+    <button class="share-wa" id="share-wa-btn">💬 Share</button>
+  </div>
+</div>
+
+<!-- ■■■ PAYWALL MODAL ■■■ -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" style="position:relative">
+    <button class="pay-close" onclick="closeModal()">✕</button>
+    <div class="modal-handle"></div>
+
+    <div id="pre-pay-state">
+      <span class="modal-emoji">✨</span>
+      <div class="modal-title">Unlock HD Download</div>
+      <div class="modal-sub">Get your photo strip in full resolution with zero watermark — share-ready for Instagram &amp; prints.</div>
+
+      <div class="price-strip">
+        <div class="pr-old">₹99</div>
+        <div class="pr-new">₹11</div>
+        <div class="pr-label">one-time</div>
+      </div>
+
+      <div class="perks-list">
+        <div class="perk-row"><div class="perk-ico">🖼️</div> Full HD · crystal-clear quality</div>
+        <div class="perk-row"><div class="perk-ico">🚫</div> No watermark, ever</div>
+        <div class="perk-row"><div class="perk-ico">⚡</div> Instant download</div>
+        <div class="perk-row"><div class="perk-ico">🔒</div> Secure · No subscription</div>
+      </div>
+
+      <div class="pay-methods">
+        <div class="pay-m sel" data-m="upi">📱 UPI</div>
+        <div class="pay-m" data-m="card">💳 Card</div>
+        <div class="pay-m" data-m="wallet">👛 Wallet</div>
+      </div>
+
+      <button class="pay-now" id="pay-now-btn">🔒 &nbsp;Pay ₹11 Now</button>
+      <div class="pay-secure">Powered by Razorpay · SSL Encrypted</div>
+    </div>
+
+    <div class="pay-success" id="pay-success-state">
+      <div style="font-size:64px;margin-bottom:4px">🎊</div>
+      <h3>You're all set!</h3>
+      <p>Your HD strip is ready — no watermark, full quality.</p>
+      <button class="dl-final" id="dl-final-btn">⬇ Download HD Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Canvases + inputs (hidden) -->
+<canvas id="work-canvas" class="hidden"></canvas>
+<input type="file" id="file-input" accept="image/*" multiple style="display:none">
+<canvas id="confetti"></canvas>
+
+<script>
+/* ════════════════════════════════════════════
+   CONFIG
+════════════════════════════════════════════ */
+const LAYOUTS = [
+  { id:'v4', name:'4 Vertical',  shots:4, desc:'Classic strip',    make:makeV4 },
+  { id:'v3', name:'3 Vertical',  shots:3, desc:'Compact strip',    make:makeV3 },
+  { id:'v2', name:'2 Vertical',  shots:2, desc:'Duo strip',        make:makeV2 },
+  { id:'g4', name:'2×2 Grid',    shots:4, desc:'Square layout',    make:makeG4 },
+  { id:'g6', name:'2×3 Grid',    shots:6, desc:'Full grid',        make:makeG6 },
+];
+
+const FILTERS = [
+  { id:'none',   label:'Original', css:'' },
+  { id:'f-rosy', label:'Rosy',     css:'sepia(.2) saturate(1.4) hue-rotate(-20deg) brightness(1.08)' },
+  { id:'f-dreamy',label:'Dreamy',  css:'brightness(1.12) saturate(1.3) contrast(.92)' },
+  { id:'f-warm', label:'Warm',     css:'sepia(.4) saturate(1.6) brightness(1.05)' },
+  { id:'f-cool', label:'Cool',     css:'saturate(.7) hue-rotate(20deg) brightness(1.1)' },
+  { id:'f-bw',   label:'B&W',      css:'grayscale(1)' },
+  { id:'f-fade', label:'Fade',     css:'contrast(.82) brightness(1.1) saturate(.65)' },
+  { id:'f-retro',label:'Retro',    css:'sepia(.6) contrast(1.1) brightness(.95)' },
+  { id:'f-neon', label:'Neon',     css:'saturate(2.2) contrast(1.25) brightness(.9) hue-rotate(15deg)' },
+];
+
+const BGS = [
+  { value:'#FFFFFF',   grad:null },
+  { value:'#FDF0F5',   grad:null },
+  { value:'#F5EEF8',   grad:null },
+  { value:'#EEF5FB',   grad:null },
+  { value:'#F0F8F0',   grad:null },
+  { value:'#FFF8E8',   grad:null },
+  { value:'#1C1A24',   grad:null },
+  { value:'grad1',     grad:['#F2C4CE','#D4B8E0'] },
+  { value:'grad2',     grad:['#B8D8E8','#B8D4C8'] },
+  { value:'grad3',     grad:['#F5C6A0','#F2C4CE'] },
+];
+
+const STICKERS = ['🌸','💖','✨','⭐','🔥','💫','🌈','🎀','💕','🦋','🌺','💎','🍀','🎵','🥰','🌙','☁️','🍓','🧁','🌻','🪷','🫧','🩷','🫶'];
+
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+let selectedLayout = LAYOUTS[0];
+let currentFilter  = FILTERS[0];
+let currentBg      = BGS[0];
+let shots          = [];   // {img, filter}
+let placedStickers = [];   // {emoji, x, y}
+let adj = { brightness:100, contrast:100, saturation:100 };
+let cameraStream   = null;
+let facingMode     = 'user';
+let isCounting     = false;
+let paymentDone    = false;
+
+/* ════════════════════════════════════════════
+   PAGE NAV
+════════════════════════════════════════════ */
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ════════════════════════════════════════════
+   BUILD LAYOUT CARDS
+════════════════════════════════════════════ */
+(function buildLayoutCards(){
+  const grid = document.getElementById('layout-grid');
+  LAYOUTS.forEach((l,i)=>{
+    const card = document.createElement('div');
+    card.className='layout-card'+(i===0?' selected':'');
+    card.dataset.id=l.id;
+
+    // preview SVG frames
+    let preview='';
+    if(l.id.startsWith('v')){
+      preview='<div class="strip-preview">';
+      for(let j=0;j<l.shots;j++){
+        preview+=`<div class="sp-frame" style="width:64px;height:${l.shots===4?46:l.shots===3?58:80}px"></div>`;
+      }
+      preview+='</div>';
+    } else {
+      const cols=2, rows=l.shots/2;
+      preview='<div class="strip-preview grid">';
+      for(let j=0;j<l.shots;j++){
+        preview+=`<div class="sp-frame" style="width:${rows===2?50:42}px;height:${rows===2?50:42}px"></div>`;
+      }
+      preview+='</div>';
+    }
+
+    card.innerHTML=`
+      <div class="layout-check">✓</div>
+      ${preview}
+      <div class="layout-name">${l.name}</div>
+      <div class="layout-desc">${l.desc} · ${l.shots} photos</div>
+    `;
+    card.addEventListener('click',()=>{
+      document.querySelectorAll('.layout-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedLayout=l;
+    });
+    grid.appendChild(card);
+  });
+})();
+
+/* ════════════════════════════════════════════
+   BUILD FILTER PILLS
+════════════════════════════════════════════ */
+(function buildFilters(){
+  const rail = document.getElementById('filter-rail');
+  FILTERS.forEach((f,i)=>{
+    const pill=document.createElement('div');
+    pill.className='filter-pill'+(i===0?' active':'');
+    pill.dataset.id=f.id;
+    // mini canvas preview
+    pill.innerHTML=`
+      <div class="filter-circle" id="fc-${f.id}"><span style="font-size:11px;font-weight:700;letter-spacing:.2px;color:rgba(255,255,255,.6)">${f.label}</span></div>
+      <div class="filter-label">${f.label}</div>
+    `;
+    pill.addEventListener('click',()=>setFilter(f));
+    rail.appendChild(pill);
+  });
+})();
+
+function setFilter(f){
+  currentFilter=f;
+  const video=document.getElementById('video');
+  video.style.filter=f.css;
+  document.querySelectorAll('.filter-pill').forEach(p=>{
+    p.classList.toggle('active',p.dataset.id===f.id);
+  });
+}
+
+/* ════════════════════════════════════════════
+   BUILD EDITOR UI
+════════════════════════════════════════════ */
+(function buildEditor(){
+  // BG swatches
+  const bgStrip=document.getElementById('bg-strip');
+  BGS.forEach((bg,i)=>{
+    const sw=document.createElement('div');
+    sw.className='bg-swatch'+(i===0?' active':'');
+    if(bg.grad) sw.style.background=`linear-gradient(135deg,${bg.grad[0]},${bg.grad[1]})`;
+    else { sw.style.background=bg.value; if(bg.value==='#FFFFFF') sw.style.border='1.5px solid rgba(200,160,200,.3)'; }
+    sw.addEventListener('click',()=>{
+      document.querySelectorAll('.bg-swatch').forEach(s=>s.classList.remove('active'));
+      sw.classList.add('active');
+      currentBg=bg;
+      renderResult();
+    });
+    bgStrip.appendChild(sw);
+  });
+
+  // Stickers
+  const ss=document.getElementById('sticker-strip');
+  STICKERS.forEach(s=>{
+    const el=document.createElement('div');
+    el.className='stk';
+    el.textContent=s;
+    el.addEventListener('click',()=>{
+      const canvas=document.getElementById('result-canvas');
+      placedStickers.push({emoji:s,x:canvas.width/2+Math.random()*60-30,y:canvas.height/2+Math.random()*60-30});
+      renderResult();
+    });
+    ss.appendChild(el);
+  });
+
+  // Sliders
+  const sliders=document.getElementById('sliders');
+  [['brightness','Brightness',50,150],['contrast','Contrast',50,150],['saturation','Saturation',0,200]].forEach(([k,label,min,max])=>{
+    const row=document.createElement('div');
+    row.className='slider-row';
+    row.innerHTML=`
+      <div class="sl-label">${label}</div>
+      <input type="range" id="sl-${k}" min="${min}" max="${max}" value="100">
+      <div class="sl-val" id="sv-${k}">100</div>
+    `;
+    sliders.appendChild(row);
+    row.querySelector('input').addEventListener('input',e=>{
+      adj[k]=parseInt(e.target.value);
+      document.getElementById(`sv-${k}`).textContent=e.target.value;
+      const pct=((e.target.value-min)/(max-min)*100)+'%';
+      e.target.style.setProperty('--p',pct);
+      renderResult();
+    });
+  });
+
+  // Editor tabs
+  document.querySelectorAll('.ed-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.ed-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.ed-panel').forEach(p=>p.classList.remove('active'));
+      document.getElementById(`ep-${tab.dataset.panel}`).classList.add('active');
+    });
+  });
+})();
+
+/* ════════════════════════════════════════════
+   CAMERA
+════════════════════════════════════════════ */
+async function startCamera(facing='user'){
+  try{
+    if(cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+    cameraStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:facing,width:{ideal:1920},height:{ideal:1080}},audio:false
+    });
+    const v=document.getElementById('video');
+    v.srcObject=cameraStream;
+    v.className='mirror';
+    if(facing==='environment') v.classList.remove('mirror');
+    document.getElementById('no-cam').style.display='none';
+  }catch(e){
+    document.getElementById('no-cam').style.display='flex';
+  }
+}
+
+function setupProgressDots(){
+  const bar=document.getElementById('progress-bar');
+  bar.innerHTML='';
+  for(let i=0;i<selectedLayout.shots;i++){
+    const d=document.createElement('div');
+    d.className='prog-dot'+(i===0?' active':'');
+    d.id=`pd-${i}`;
+    bar.appendChild(d);
+  }
+}
+
+function updateDots(){
+  for(let i=0;i<selectedLayout.shots;i++){
+    const d=document.getElementById(`pd-${i}`);
+    if(!d) continue;
+    d.className='prog-dot'+(i<shots.length?'done':i===shots.length?' active':'');
+  }
+}
+
+/* ════════════════════════════════════════════
+   START BOOTH
+════════════════════════════════════════════ */
+function startBooth(){
+  shots=[];placedStickers=[];
+  setupProgressDots();
+  goTo('page-booth');
+  startCamera(facingMode);
+}
+
+function exitBooth(){
+  if(cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+  goTo('page-layout');
+}
+
+/* ════════════════════════════════════════════
+   SHUTTER
+════════════════════════════════════════════ */
+document.getElementById('shutter-btn').addEventListener('click',()=>{
+  if(isCounting||shots.length>=selectedLayout.shots) return;
+  countdown();
+});
+
+async function countdown(){
+  isCounting=true;
+  const overlay=document.getElementById('countdown-overlay');
+  const num=document.getElementById('count-num');
+  overlay.style.display='flex';
+  for(let i=3;i>=1;i--){
+    num.textContent=i;
+    num.style.animation='none';num.offsetHeight;
+    num.style.animation='count-anim .85s ease both';
+    await wait(900);
+  }
+  overlay.style.display='none';
+  captureFrame();
+  isCounting=false;
+}
+
+function captureFrame(){
+  const video=document.getElementById('video');
+  const wc=document.getElementById('work-canvas');
+  wc.width=720;wc.height=540;
+  const ctx=wc.getContext('2d');
+  if(facingMode==='user'){ctx.translate(720,0);ctx.scale(-1,1);}
+  ctx.filter=currentFilter.css||'none';
+  ctx.drawImage(video,0,0,720,540);
+  ctx.setTransform(1,0,0,1,0,0);
+  const img=new Image();
+  img.src=wc.toDataURL('image/jpeg',.92);
+  shots.push({img,filter:currentFilter.css});
+  flash();
+  updateDots();
+  if(shots.length>=selectedLayout.shots){
+    setTimeout(()=>showEditor(),500);
+  }
+}
+
+function flash(){
+  const f=document.getElementById('flash');
+  f.style.opacity='.9';setTimeout(()=>{f.style.opacity='0';},120);
+}
+
+/* ════════════════════════════════════════════
+   FLIP / RANDOM / RETAKE
+════════════════════════════════════════════ */
+document.getElementById('flip-btn').addEventListener('click',()=>{
+  facingMode=facingMode==='user'?'environment':'user';
+  startCamera(facingMode);
+});
+
+document.getElementById('random-btn').addEventListener('click',()=>{
+  const f=FILTERS[Math.floor(Math.random()*FILTERS.length)];
+  setFilter(f);
+  const btn=document.getElementById('random-btn');
+  btn.style.transform='rotate(360deg)';btn.style.transition='transform .4s';
+  setTimeout(()=>{btn.style.transform='';btn.style.transition='';},400);
+});
+
+document.getElementById('retake-btn').addEventListener('click',()=>{
+  if(shots.length>0){shots.pop();updateDots();}
+});
+
+/* ════════════════════════════════════════════
+   FILE UPLOAD
+════════════════════════════════════════════ */
+document.getElementById('upload-btn').addEventListener('click',()=>document.getElementById('file-input').click());
+document.getElementById('file-input').addEventListener('change',e=>{
+  const files=Array.from(e.target.files).slice(0,selectedLayout.shots-shots.length);
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=new Image();img.src=ev.target.result;
+      img.onload=()=>{shots.push({img,filter:''});updateDots();if(shots.length>=selectedLayout.shots)setTimeout(()=>showEditor(),400);};
+    };reader.readAsDataURL(file);
+  });
+  e.target.value='';
+});
+
+/* ════════════════════════════════════════════
+   SHOW EDITOR
+════════════════════════════════════════════ */
+function showEditor(){
+  if(cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+  goTo('page-editor');
+  renderResult();
+}
+
+/* ════════════════════════════════════════════
+   RENDER STRIP
+════════════════════════════════════════════ */
+function renderResult(){
+  const canvas=document.getElementById('result-canvas');
+  selectedLayout.make(canvas,shots,currentBg,adj,placedStickers);
+  // Fit display
+  const maxW=Math.min(window.innerWidth-48,420);
+  const maxH=350;
+  const ratio=Math.min(maxW/canvas.width,maxH/canvas.height);
+  canvas.style.width=Math.round(canvas.width*ratio)+'px';
+  canvas.style.height=Math.round(canvas.height*ratio)+'px';
+}
+
+/* ─── LAYOUT RENDERERS ──────────────────────── */
+function getBg(canvas,ctx,bg){
+  if(bg.grad){
+    const g=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+    g.addColorStop(0,bg.grad[0]);g.addColorStop(1,bg.grad[1]);return g;
+  }
+  return bg.value;
+}
+
+function drawPhoto(ctx,shot,x,y,w,h,r=10){
+  ctx.save();
+  roundedRect(ctx,x,y,w,h,r);ctx.clip();
+  if(!shot||!shot.img){
+    ctx.fillStyle='rgba(200,160,200,.15)';ctx.fillRect(x,y,w,h);
+    ctx.restore();return;
+  }
+  ctx.filter=shot.filter||'none';
+  drawCover(ctx,shot.img,x,y,w,h);
+  ctx.restore();
+  // subtle border
+  ctx.save();roundedRect(ctx,x,y,w,h,r);
+  ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1.5;ctx.stroke();ctx.restore();
+}
+
+function drawCover(ctx,img,x,y,w,h){
+  const ir=img.naturalWidth/img.naturalHeight||img.width/img.height;
+  const cr=w/h;
+  let sx,sy,sw,sh;
+  if(ir>cr){sh=img.naturalHeight||img.height;sw=sh*cr;sx=((img.naturalWidth||img.width)-sw)/2;sy=0;}
+  else{sw=img.naturalWidth||img.width;sh=sw/cr;sx=0;sy=((img.naturalHeight||img.height)-sh)/2;}
+  ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
+}
+
+function roundedRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+}
+
+function applyAdj(ctx,canvas,adj){
+  ctx.filter=`brightness(${adj.brightness}%) contrast(${adj.contrast}%) saturate(${adj.saturation}%)`;
+}
+
+function drawStickers(ctx,stickers){
+  ctx.filter='none';
+  stickers.forEach(s=>{
+    ctx.font='52px serif';ctx.textBaseline='middle';ctx.textAlign='center';
+    ctx.fillText(s.emoji,s.x,s.y);
+  });
+}
+
+function drawWatermark(ctx,w,h){
+  ctx.save();
+  ctx.font='bold 13px DM Sans,sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.65)';
+  ctx.textAlign='center';ctx.textBaseline='bottom';
+  ctx.fillText('photobooth.app',w/2,h-8);
+  ctx.restore();
+}
+
+function makeV4(canvas,shots,bg,adj,stickers){
+  const W=340,PAD=14,GAP=8;
+  const IH=Math.floor((500-PAD*2-GAP*3)/4);
+  canvas.width=W;canvas.height=500;
+  const ctx=canvas.getContext('2d');
+  // BG
+  ctx.filter='none';ctx.fillStyle=getBg(canvas,ctx,bg);ctx.fillRect(0,0,W,500);
+  ctx.filter=`brightness(${adj.brightness}%) contrast(${adj.contrast}%) saturate(${adj.saturation}%)`;
+  for(let i=0;i<4;i++) drawPhoto(ctx,shots[i]||null,PAD,PAD+i*(IH+GAP),W-PAD*2,IH);
+  drawStickers(ctx,stickers);drawWatermark(ctx,W,500);
+}
+function makeV3(canvas,shots,bg,adj,stickers){
+  const W=340,PAD=14,GAP=10;
+  const IH=Math.floor((460-PAD*2-GAP*2)/3);
+  canvas.width=W;canvas.height=460;
+  const ctx=canvas.getContext('2d');
+  ctx.filter='none';ctx.fillStyle=getBg(canvas,ctx,bg);ctx.fillRect(0,0,W,460);
+  ctx.filter=`brightness(${adj.brightness}%) contrast(${adj.contrast}%) saturate(${adj.saturation}%)`;
+  for(let i=0;i<3;i++) drawPhoto(ctx,shots[i]||null,PAD,PAD+i*(IH+GAP),W-PAD*2,IH);
+  drawStickers(ctx,stickers);drawWatermark(ctx,W,460);
+}
+function makeV2(canvas,shots,bg,adj,stickers){
+  const W=340,PAD=14,GAP=12;
+  const IH=Math.floor((380-PAD*2-GAP)/2);
+  canvas.width=W;canvas.height=380;
+  const ctx=canvas.getContext('2d');
+  ctx.filter='none';ctx.fillStyle=getBg(canvas,ctx,bg);ctx.fillRect(0,0,W,380);
+  ctx.filter=`brightness(${adj.brightness}%) contrast(${adj.contrast}%) saturate(${adj.saturation}%)`;
+  for(let i=0;i<2;i++) drawPhoto(ctx,shots[i]||null,PAD,PAD+i*(IH+GAP),W-PAD*2,IH);
+  drawStickers(ctx,stickers);drawWatermark(ctx,W,380);
+}
+function makeG4(canvas,shots,bg,adj,stickers){
+  const W=480,PAD=16,GAP=10;
+  const C=(W-PAD*2-GAP)/2;
+  canvas.width=W;canvas.height=W;
+  const ctx=canvas.getContext('2d');
+  ctx.filter='none';ctx.fillStyle=getBg(canvas,ctx,bg);ctx.fillRect(0,0,W,W);
+  ctx.filter=`brightness(${adj.brightness}%) contrast(${adj.contrast}%) saturate(${adj.saturation}%)`;
+  for(let i=0;i<4;i++){
+    const col=i%2,row=Math.floor(i/2);
+    drawPhoto(ctx,shots[i]||null,PAD+col*(C+GAP),PAD+row*(C+GAP),C,C);
+  }
+  drawStickers(ctx,stickers);drawWatermark(ctx,W,W);
+}
+function makeG6(canvas,shots,bg,adj,stickers){
+  const W=480,PAD=14,GAP=8;
+  const CW=(W-PAD*2-GAP)/2;const CH=Math.floor((560-PAD*2-GAP*2)/3);
+  canvas.width=W;canvas.height=560;
+  const ctx=canvas.getContext('2d');
+  ctx.filter='none';ctx.fillStyle=getBg(canvas,ctx,bg);ctx.fillRect(0,0,W,560);
+  ctx.filter=`brightness(${adj.brightness}%) contrast(${adj.contrast}%) saturate(${adj.saturation}%)`;
+  for(let i=0;i<6;i++){
+    const col=i%2,row=Math.floor(i/2);
+    drawPhoto(ctx,shots[i]||null,PAD+col*(CW+GAP),PAD+row*(CH+GAP),CW,CH);
+  }
+  drawStickers(ctx,stickers);drawWatermark(ctx,W,560);
+}
+
+/* ════════════════════════════════════════════
+   DOWNLOAD
+════════════════════════════════════════════ */
+document.getElementById('dl-free-btn').addEventListener('click',()=>{
+  const canvas=document.getElementById('result-canvas');
+  triggerDL(canvas.toDataURL('image/jpeg',.88),'photobooth-free.jpg');
+  document.getElementById('dl-free-btn').textContent='✓ Downloaded!';
+  setTimeout(()=>document.getElementById('dl-free-btn').textContent='⬇ Download (with watermark)',2000);
+});
+
+document.getElementById('dl-hd-btn').addEventListener('click',()=>{
+  if(paymentDone){downloadHD();return;}
+  document.getElementById('modal-bg').classList.add('open');
+});
+
+function downloadHD(){
+  const canvas=document.getElementById('result-canvas');
+  // HD: redraw without watermark at 2x
+  const hd=document.createElement('canvas');
+  hd.width=canvas.width*2;hd.height=canvas.height*2;
+  const ctx=hd.getContext('2d');
+  ctx.scale(2,2);
+  ctx.drawImage(canvas,0,0);
+  triggerDL(hd.toDataURL('image/jpeg',.97),'photobooth-HD.jpg');
+}
+
+function triggerDL(url,name){
+  const a=document.createElement('a');a.href=url;a.download=name;a.click();
+}
+
+/* ════════════════════════════════════════════
+   SHARE
+════════════════════════════════════════════ */
+document.getElementById('share-wa-btn').addEventListener('click',async()=>{
+  const canvas=document.getElementById('result-canvas');
+  if(navigator.share){
+    try{
+      const blob=await (await fetch(canvas.toDataURL('image/jpeg',.9))).blob();
+      const file=new File([blob],'photobooth.jpg',{type:'image/jpeg'});
+      await navigator.share({title:'My Photobooth Strip! 📸',files:[file]});
+      return;
+    }catch(e){}
+  }
+  window.open(`https://wa.me/?text=${encodeURIComponent('Check out my photobooth strip! 📸✨')}`, '_blank');
+});
+
+/* ════════════════════════════════════════════
+   PAYWALL
+════════════════════════════════════════════ */
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+document.getElementById('modal-bg').addEventListener('click',e=>{if(e.target===document.getElementById('modal-bg'))closeModal();});
+
+document.querySelectorAll('.pay-m').forEach(m=>{
+  m.addEventListener('click',()=>{
+    document.querySelectorAll('.pay-m').forEach(x=>x.classList.remove('sel'));
+    m.classList.add('sel');
+  });
+});
+
+document.getElementById('pay-now-btn').addEventListener('click',()=>{
+  const btn=document.getElementById('pay-now-btn');
+  btn.innerHTML='⏳ &nbsp;Processing…';btn.style.opacity='.7';
+  setTimeout(()=>{
+    paymentDone=true;
+    document.getElementById('pre-pay-state').style.display='none';
+    document.getElementById('pay-success-state').classList.add('show');
+    document.getElementById('dl-hd-btn').textContent='⭐ Download HD (Unlocked)';
+    document.getElementById('dl-hd-btn').style.background='linear-gradient(135deg,#B8D4C8,#B8D8E8)';
+    triggerConfetti();
+  },1800);
+});
+
+document.getElementById('dl-final-btn').addEventListener('click',()=>{
+  downloadHD();closeModal();
+});
+
+/* ════════════════════════════════════════════
+   RESET
+════════════════════════════════════════════ */
+function resetAll(){
+  shots=[];placedStickers=[];
+  document.getElementById('pre-pay-state').style.display='block';
+  document.getElementById('pay-success-state').classList.remove('show');
+  document.getElementById('pay-now-btn').innerHTML='🔒 &nbsp;Pay ₹11 Now';
+  document.getElementById('pay-now-btn').style.opacity='1';
+  goTo('page-layout');
+}
+
+/* ════════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════════ */
+function triggerConfetti(){
+  const cv=document.getElementById('confetti');
+  const ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const pastelColors=['#F2C4CE','#D4B8E0','#B8D8E8','#B8D4C8','#F5C6A0','#E8A0B0'];
+  const pieces=Array.from({length:70},()=>({
+    x:Math.random()*cv.width,y:-10,
+    vx:(Math.random()-.5)*3,vy:Math.random()*3+2,
+    color:pastelColors[Math.floor(Math.random()*pastelColors.length)],
+    size:Math.random()*7+3,rot:Math.random()*360,vr:(Math.random()-.5)*6,
+  }));
+  let f=0;
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    pieces.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.vy+=.08;
+    });
+    if(++f<140)requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,cv.width,cv.height);
+  }
+  draw();
+}
+
+/* ════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════ */
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+</script>
 </body>
 </html>
