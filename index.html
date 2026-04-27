@@ -676,8 +676,8 @@ canvas{display:none}
     </div>
 
     <div style="background:var(--cr3);border:1px solid rgba(181,70,75,0.2);border-radius:12px;padding:16px;margin-bottom:16px">
-      <div style="font-size:0.8rem;color:var(--cr);font-weight:600;margin-bottom:6px">Watermark hatana chahte ho?</div>
-      <div style="font-size:0.78rem;color:var(--ink2);margin-bottom:12px">Pro upgrade karo — ₹21 one-time, sab kuch milega.</div>
+      <div style="font-size:0.8rem;color:var(--cr);font-weight:600;margin-bottom:6px">Want to remove watermark?</div>
+      <div style="font-size:0.78rem;color:var(--ink2);margin-bottom:12px">Upgrade to Pro — ₹21 one-time.</div>
       <button class="mpay" style="margin:0;padding:12px;font-size:0.85rem" onclick="closeDLModal();payNow()">Unlock Pro — ₹21 →</button>
     </div>
     <button class="mclose" onclick="closeDLModal()">Close</button>
@@ -688,8 +688,9 @@ canvas{display:none}
 <div class="mover" id="exit-modal" onclick="closeExitModalOuter(event)">
   <div class="mbox" style="border-top:4px solid var(--gold,#D4AF37)">
     <span class="exit-emoji">👀</span>
-    <div class="exit-modal-title">Ruko! Ek second.</div>
-    <div class="exit-modal-sub">Tab band karne se pehle — kya tumhe pata hai ki ₹21 mein lifetime Pro mil raha hai? Ek coffee se bhi sasta.</div>
+    <div class="exit-modal-title">Wait A sec.</div>
+    <div class="exit-modal-sub">
+Before you close the tab – did you know you can get lifetime Pro for ₹21? Cheaper than a coffee.</div>
     <div class="exit-offer">
       <div>
         <div class="exit-price-old">₹299 worth of features</div>
@@ -704,7 +705,8 @@ canvas{display:none}
 
 <!-- ─── ADD: STICKY BOTTOM UPSELL ─── -->
 <div id="sticky-upsell">
-  <div class="su-text"><strong>Free plan:</strong> Watermark laga hai strip pe. Remove karo — sirf <strong>₹21</strong></div>
+  <div class="su-text"><strong>Free plan:</strong> 
+There's a watermark on the strip. Remove it – just <strong>₹21</strong></div>
   <button class="su-cta" onclick="openModal()">Upgrade Now →</button>
   <button class="su-close" onclick="document.getElementById('sticky-upsell').classList.remove('show')">✕</button>
 </div>
