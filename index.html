@@ -662,22 +662,22 @@ canvas{display:none}
   <div class="mbox" style="border-top:4px solid #2D7D4A">
     <div class="dl-checkmark">✅</div>
     <div class="mtitle" style="font-size:1.5rem">Strip downloaded!</div>
-    <div class="msub" style="margin-bottom:16px">Acha laga? Share karo ya upgrade karo.</div>
+    <div class="msub" style="margin-bottom:16px">Liked it?Share or upgrade.</div>
 
     <!-- Share buttons -->
     <div style="margin-bottom:16px">
-      <div style="font-size:0.72rem;color:var(--ink3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px">Share karo aur viral hojao</div>
+      <div style="font-size:0.72rem;color:var(--ink3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px">Share and get viral</div>
       <div class="share-big">
-        <button class="sbig-btn wa2" onclick="shareWA();closeDLModal()">WhatsApp pe Share</button>
+        <button class="sbig-btn wa2" onclick="shareWA();closeDLModal()">Share on WhatsApp</button>
         <button class="sbig-btn ig2" onclick="shareIG();closeDLModal()">Instagram Story</button>
-        <button class="sbig-btn cp" onclick="copyLink();closeDLModal()">Link Copy karo</button>
+        <button class="sbig-btn cp" onclick="copyLink();closeDLModal()">Link Copy</button>
         <button class="sbig-btn mo" onclick="closeDLModal();openModal()">✦ More Filters</button>
       </div>
     </div>
 
     <div style="background:var(--cr3);border:1px solid rgba(181,70,75,0.2);border-radius:12px;padding:16px;margin-bottom:16px">
-      <div style="font-size:0.8rem;color:var(--cr);font-weight:600;margin-bottom:6px">Watermark hatana chahte ho?</div>
-      <div style="font-size:0.78rem;color:var(--ink2);margin-bottom:12px">Pro upgrade karo — ₹21 one-time, sab kuch milega.</div>
+      <div style="font-size:0.8rem;color:var(--cr);font-weight:600;margin-bottom:6px">Want to remove the watermark?</div>
+      <div style="font-size:0.78rem;color:var(--ink2);margin-bottom:12px">Upgrade to Pro — ₹21 one-time, unlock everything.</div>
       <button class="mpay" style="margin:0;padding:12px;font-size:0.85rem" onclick="closeDLModal();payNow()">Unlock Pro — ₹21 →</button>
     </div>
     <button class="mclose" onclick="closeDLModal()">Close</button>
@@ -688,8 +688,8 @@ canvas{display:none}
 <div class="mover" id="exit-modal" onclick="closeExitModalOuter(event)">
   <div class="mbox" style="border-top:4px solid var(--gold,#D4AF37)">
     <span class="exit-emoji">👀</span>
-    <div class="exit-modal-title">Ruko! Ek second.</div>
-    <div class="exit-modal-sub">Tab band karne se pehle — kya tumhe pata hai ki ₹21 mein lifetime Pro mil raha hai? Ek coffee se bhi sasta.</div>
+    <div class="exit-modal-title">Wait a Second.</div>
+    <div class="exit-modal-sub">Before you close the tab id you know you can get lifetime Pro for ₹21? Cheaper than a coffee.</div>
     <div class="exit-offer">
       <div>
         <div class="exit-price-old">₹299 worth of features</div>
@@ -704,7 +704,7 @@ canvas{display:none}
 
 <!-- ─── ADD: STICKY BOTTOM UPSELL ─── -->
 <div id="sticky-upsell">
-  <div class="su-text"><strong>Free plan:</strong> Watermark laga hai strip pe. Remove karo — sirf <strong>₹21</strong></div>
+  <div class="su-text"><strong>Free plan:</strong> There's a watermark on the strip. Remove it – just<strong>₹21</strong></div>
   <button class="su-cta" onclick="openModal()">Upgrade Now →</button>
   <button class="su-close" onclick="document.getElementById('sticky-upsell').classList.remove('show')">✕</button>
 </div>
@@ -940,7 +940,7 @@ async function startCap(){
   // Nudge after 3rd strip
   const stripsDone=parseInt(localStorage.getItem('pb_strips')||'0')+1;
   localStorage.setItem('pb_strips',stripsDone);
-  if(!isPro&&stripsDone>=3)setTimeout(()=>{toast('3 strips done! Watermark hatao — ₹21 mein Pro lo 🎉');},1200);
+  if(!isPro&&stripsDone>=3)setTimeout(()=>{toast('3 strips done! Remove Watermark at just 21');},1200);
 }
 
 function runCD(from){
@@ -1006,16 +1006,17 @@ async function dlStrip(){
 
 // ─── SOCIAL SHARE ───
 function shareWA(){
-  const txt=encodeURIComponent('Dekho maine PhotoBooth pe kya banaya! 📸 Cinematic strips — try karo: '+window.location.href);
+  const txt=encodeURIComponent('
+Look what I made at the photobooth! Cinematic strips — try: '+window.location.href);
   window.open('https://api.whatsapp.com/send?text='+txt,'_blank');
   toast('Opening WhatsApp...');
 }
 function shareIG(){
-  toast('Download karo pehle, phir Instagram pe upload karo! 📲');
+  toast('Download it first, then upload it to Instagram! ');
   setTimeout(()=>{if(captured.length)dlStrip();},800);
 }
 function copyLink(){
-  navigator.clipboard.writeText(window.location.href).then(()=>toast('Link copied! Share karo 🔗')).catch(()=>toast('Copy failed — manually copy the URL'));
+  navigator.clipboard.writeText(window.location.href).then(()=>toast('Link copied! Share now')).catch(()=>toast('Copy failed — manually copy the URL'));
 }
 
 // ─── MODAL CONTROLS ───
